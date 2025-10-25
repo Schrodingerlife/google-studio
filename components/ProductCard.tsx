@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { TrendingProduct } from '../types';
 import { SparklesIcon } from './icons/SparklesIcon';
@@ -9,7 +8,7 @@ interface ProductCardProps {
 }
 
 const StatChip: React.FC<{ icon: string; label: string; value: string | number; color: string; }> = ({ icon, label, value, color }) => (
-    <div className="flex items-center gap-2 bg-slate-700/50 rounded-full px-3 py-1 text-xs">
+    <div className="flex items-center gap-2 bg-slate-700/50 rounded-full px-3 py-1 text-xs cursor-pointer">
         <i className={`${icon} ${color}`}></i>
         <span className="text-gray-300">{label}:</span>
         <span className="font-bold text-white">{value}</span>
@@ -42,7 +41,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onGenerateStrategy }
         <div className="flex flex-wrap gap-2 mb-4">
             <StatChip icon="fas fa-arrow-trend-up" label="Trend" value={product.trending_score} color="text-green-400" />
             <StatChip icon="fas fa-fire" label="Viral" value={product.viral_potential} color="text-orange-400" />
-            <StatChip icon="fas fa-shopping-cart" label="Vendas" value={`${(product.sales_metrics.monthly_sales / 1000).toFixed(1)}k`} color="text-blue-400" />
+            
+            {/* Tooltip for Sales Metrics */}
+            <div className="relative group">
+                <StatChip icon="fas fa-shopping-cart" label="Vendas" value={`${(product.sales_metrics.monthly_sales / 1000).toFixed(1)}k`} color="text-blue-400" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max bg-slate-900 text-sm text-gray-300 rounded-md shadow-lg p-3 border border-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 invisible group-hover:visible z-10">
+                    <h4 className="font-bold text-white mb-2 text-base border-b border-slate-700 pb-1">Métricas de Vendas</h4>
+                    <ul className="space-y-1.5 text-left">
+                        <li className="flex items-center gap-2">
+                            <i className="fas fa-chart-line w-4 text-center text-gray-400"></i>
+                            <span>Vendas Mensais: <strong className="text-white">{product.sales_metrics.monthly_sales.toLocaleString('pt-BR')}</strong></span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <i className="fas fa-star w-4 text-center text-yellow-400"></i>
+                            <span>Avaliação: <strong className="text-white">{product.sales_metrics.rating.toFixed(1)} / 5.0</strong></span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <i className="fas fa-comment-dots w-4 text-center text-gray-400"></i>
+                            <span>Nº de Avaliações: <strong className="text-white">{product.sales_metrics.number_of_reviews.toLocaleString('pt-BR')}</strong></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <button

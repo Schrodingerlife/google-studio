@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Filters from './components/Filters';
 import ProductCard from './components/ProductCard';
 import RecommendationModal from './components/RecommendationModal';
+import NewProductAlert from './components/NewProductAlert'; // Import the new component
 import { SparklesIcon } from './components/icons/SparklesIcon';
 
 const App: React.FC = () => {
@@ -16,10 +17,23 @@ const App: React.FC = () => {
   const [recommendation, setRecommendation] = useState('');
   const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newProductAlert, setNewProductAlert] = useState<TrendingProduct | null>(null); // State for the alert
 
   useEffect(() => {
     // Simulate fetching data on mount
     setProducts(MOCK_PRODUCTS);
+
+    // In a real app, you'd compare new data with old to find "new" products.
+    // For this demo, we'll find a product with a score > 95 and show an alert for it.
+    const highTrendProduct = MOCK_PRODUCTS.find(p => p.trending_score > 95);
+
+    if (highTrendProduct) {
+      // Use a timeout to make the notification appear after the page has loaded, making it more noticeable.
+      const timer = setTimeout(() => {
+        setNewProductAlert(highTrendProduct);
+      }, 1500);
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    }
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
@@ -72,9 +86,17 @@ const App: React.FC = () => {
     setRecommendation('');
     setError(null);
   };
+  
+  const handleDismissAlert = () => {
+    setNewProductAlert(null);
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 font-sans">
+      {newProductAlert && (
+        <NewProductAlert product={newProductAlert} onDismiss={handleDismissAlert} />
+      )}
+
       <header className="bg-slate-800/50 backdrop-blur-sm sticky top-0 z-20 shadow-lg">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
